@@ -7,9 +7,9 @@ namespace Cheols
     public class Player : MonoBehaviour
     {
         // 총알 딜레이
-        public float bulletTIme = 0.1f;
+        public float bulletTime = 0.1f;
         // 총알 딜레이만크 시간이 지나갔는지 체크
-        public float relodTIme = 0f;
+        public float relodTime = 0f;
         Rigidbody thisRigi;
         // 플레이어의 이동속도
         public float speed = 2.0f;
@@ -20,13 +20,33 @@ namespace Cheols
         // Start is called before the first frame update
         void Start()
         {
-        
+            thisRigi = this.GetComponent<Rigidbody>();
         }
+        private void Move()
+        {
+            float moveX = Input.GetAxis("Horizontal");
+            float moveZ = Input.GetAxis("Vertical");
 
+            Vector3 move = new Vector3(moveX, 0 , moveZ);
+            thisRigi.velocity = move * speed;
+
+            // 현재 플레이어의 위치와 월드 좌표계를 스크린 좌표계로 바꾼다
+            Vector3 posInWorld = Camera.main.WorldToScreenPoint(this.transform.position);
+
+            // 스크린 좌표계에서 움직일 수 있는 범위를 제한한다.
+            float posX = Mathf.Clamp(posInWorld.x, 0, Screen.width);
+            float posZ = Mathf.Clamp(posInWorld.y, 0, Screen.height);
+
+            //제한된 이동을 다시 월드 좌표계로 변경한다,
+            Vector3 posInScreen = Camera.main.ScreenToWorldPoint(new Vector3(posX, posZ, 0));
+
+            //이동시킨다
+            thisRigi.position = new Vector3(posInScreen.x, 0, posInScreen.z);
+        }
         // Update is called once per frame
         void Update()
         {
-        
+            Move();
         }
     }
 }
