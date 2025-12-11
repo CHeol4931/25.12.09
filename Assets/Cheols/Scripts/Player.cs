@@ -9,7 +9,7 @@ namespace Cheols
         // 총알 딜레이
         public float bulletTime = 0.1f;
         // 총알 딜레이만크 시간이 지나갔는지 체크
-        public float relodTime = 0f;
+        public float reloadTime = 0f;
         Rigidbody thisRigi;
         // 플레이어의 이동속도
         public float speed = 2.0f;
@@ -17,6 +17,7 @@ namespace Cheols
         public GameObject objBullet;
         // 총알이 생성될 위치
         public GameObject BulletPoint;
+
         // Start is called before the first frame update
         void Start()
         {
@@ -47,6 +48,17 @@ namespace Cheols
         void Update()
         {
             Move();
+            FireBullet();
+        }
+        void FireBullet()
+        {
+            reloadTime += Time.deltaTime;
+            if (Input.GetButton("Fire1") && bulletTime <= reloadTime)
+            {
+                reloadTime = 0f;
+                GameObject bullet = Instantiate(objBullet, BulletPoint.transform.position, this.transform.rotation);
+                bullet.GetComponent<Bullet>().SetBullect(BulletPoint.transform.position + Vector3.forward);
+            }
         }
     }
 }
