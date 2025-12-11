@@ -17,6 +17,7 @@ namespace Cheols
         public GameObject objBullet;
         // 총알이 생성될 위치
         public GameObject BulletPoint;
+        public float hp;
 
         // Start is called before the first frame update
         void Start()
@@ -58,6 +59,22 @@ namespace Cheols
                 reloadTime = 0f;
                 GameObject bullet = Instantiate(objBullet, BulletPoint.transform.position, this.transform.rotation);
                 bullet.GetComponent<Bullet>().SetBullect(BulletPoint.transform.position + Vector3.forward);
+            }
+        }
+        void OnTriggerEnter(Collider other)
+        {
+            if (other.CompareTag("Bullet"))
+            {
+                hp -= 1f;
+                if (hp < 1.0f)
+                {
+                    Destroy(gameObject);
+                }
+                Destroy(other.gameObject);
+            }
+            else if (other.CompareTag("Enemy"))
+            {
+                hp -= 1f;
             }
         }
     }
