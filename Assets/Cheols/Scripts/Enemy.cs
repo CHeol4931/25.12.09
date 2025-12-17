@@ -6,6 +6,7 @@ namespace Cheols
 {
     public class Enemy : MonoBehaviour
     {
+        private GameManager gameManager;
         public float speed;
         public float ThrowPower = 50.0f;
         private GameObject Player;
@@ -15,9 +16,20 @@ namespace Cheols
         public float fireRate = 1.0f;
         public float hp = 1.0f;
         public float maxHp = 1.0f;
+        public GameObject[] item;
+
 
         void Start()
         {
+            GameObject gameManagerObject = GameObject.FindGameObjectWithTag("GameManager");
+            if (gameManagerObject != null)
+            {
+                gameManager = gameManagerObject.GetComponent<GameManager>();
+            }
+            if (gameManagerObject == null)
+            {
+                Debug.LogError("gameManger가 존재하지 않습니다.");
+            }
             Player = GameObject.FindGameObjectWithTag("Player");
 
             if(Player == null)
@@ -25,7 +37,7 @@ namespace Cheols
                 Debug.Log("게임 Player 존재하지 않습니다.");
             }
 
-            this.GetComponent<Rigidbody>().velocity = transform.forward * speed;
+            GetComponent<Rigidbody>().velocity = transform.forward * speed;
             Invoke("ThrowPlayer", Random.Range(0.5f, 1.5f));
             InvokeRepeating("fireBullet", delay, fireRate);
         }
@@ -39,7 +51,7 @@ namespace Cheols
         }
         void fireBullet()
         {
-            if(Player != null)
+            if(Player != null && objBullet != null)
             {
                 GameObject bullet = Instantiate(objBullet, BulletPoint.transform.position, this.transform.rotation);
                 bullet.GetComponent<Bullet>().SetBullect(Player.transform.position + Vector3.forward);
@@ -56,6 +68,13 @@ namespace Cheols
                 hp -= 1f;
                 if (hp < 1.0f)
                 {
+                    int itemNum = gameManager.CreateItem();
+                    if(!other.CompareTag("Player") && itemNum != -1)
+                    {
+                        Instantiate(item[itemNum], this.transform.position, item[itemNum].transform.rotation);
+                    }
+                    gameManager.listEnemys.Remove(this.gameObject);
+
                     Destroy(gameObject);
                 }
                 Destroy(other.gameObject);
