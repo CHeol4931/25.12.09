@@ -57,6 +57,16 @@ namespace Cheols
                 bullet.GetComponent<Bullet>().SetBullect(Player.transform.position + Vector3.forward);
             }
         }
+
+        public void InitItem()
+        {
+            int itemNum = gameManager.CreateItem();
+            if(itemNum != -1)
+            {
+                Instantiate(item[itemNum], this.transform.position, item[itemNum].transform.rotation);
+            }
+        }
+
         void OnTriggerEnter(Collider other)
         {
             if (other.CompareTag("Enemy"))
@@ -73,6 +83,7 @@ namespace Cheols
                     {
                         Instantiate(item[itemNum], this.transform.position, item[itemNum].transform.rotation);
                     }
+                    
                     gameManager.listEnemys.Remove(this.gameObject);
 
                     Destroy(gameObject);
